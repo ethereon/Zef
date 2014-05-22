@@ -14,13 +14,14 @@ library
     Zef.UI
     Zef.Image
   c-sources:
-      src/foreign/ZefUtil.c
+    src/interop/zef_interop.c
   include-dirs:
     /usr/local/include/opencv2
-    src/foreign
+    src/interop
   extra-libraries:
     opencv_core
     opencv_highgui
+    opencv_imgproc
   extra-lib-dirs: /usr/local/lib
   build-depends:
     base < 5
