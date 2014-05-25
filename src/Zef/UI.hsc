@@ -5,7 +5,6 @@ module Zef.UI where
 
 import Foreign.C.Types
 import Foreign.C.String
-import Foreign.ForeignPtr
 import Zef.Image
 
 #include <opencv2/highgui/highgui_c.h>
@@ -23,8 +22,7 @@ foreign import ccall unsafe "highui_c.h cvShowImage"
 showImageNamed :: Image a => String -> a -> IO ()
 showImageNamed name img = do
     withCString name $ \cstr -> do
-        withForeignPtr (getImageData img) $ \pImg -> do
-            c_cvShowImage cstr pImg
+        withImagePtr img $ c_cvShowImage cstr
 
 showImage :: Image a => a -> IO ()
 showImage = showImageNamed "Preview"

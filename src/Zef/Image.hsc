@@ -1,5 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Zef.Image where
 
@@ -14,60 +15,57 @@ import Control.Applicative
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
 
----- Types for C counterparts
+---- Types
 
 -- |Opaque type corresponding to OpenCV's CvMat type.
 data CvMat
 
 type PCvMat = Ptr CvMat
 
-type ImageData = ForeignPtr CvMat
+newtype ImageData = ImageData { unImageData :: ForeignPtr CvMat } deriving (Eq, Show)
 
 data ImageSize = ImageSize { imageWidth  :: CInt
                            , imageHeight :: CInt
                            }
                            deriving (Eq, Show)
 
----- Image Types
+instance Num ImageData where
+    a + b           = addImages a b
+    a - b           = subImages a b
+    abs a           = absImage a
+    a * b           = mulImages a b
+    signum          = undefined
+    fromInteger     = undefined
 
 class Image a where
     getImageData    :: a -> ImageData
     wrapImageData   :: ImageData -> a
 
 -- |A matrix containing 3 channel RGB image (stored as B G R).
-newtype RGBImage = RGBImage { unRGBImage :: ImageData } deriving (Eq, Show)
+newtype RGBImage = RGBImage { unRGBImage :: ImageData } deriving (Eq, Show, Num)
+
+instance Image ImageData where
+    getImageData    = id
+    wrapImageData   = id
 
 instance Image RGBImage where
     getImageData    = unRGBImage
     wrapImageData   = RGBImage
 
 -- |A matrix containing a single channel gray scale image.
-newtype GrayImage = GrayImage { unGrayImage :: ImageData } deriving (Eq, Show)
+newtype GrayImage = GrayImage { unGrayImage :: ImageData } deriving (Eq, Show, Num)
 
 instance Image GrayImage where
     getImageData    = unGrayImage
     wrapImageData   = GrayImage
 
-instance Num RGBImage where
-    a + b           = addImages a b
-    a - b           = subImages a b
-    abs a           = absImage a
-    a * b           = mulImages a b
-    signum          = undefined
-    fromInteger     = undefined
-
-instance Num GrayImage where
-    a + b           = addImages a b
-    a - b           = subImages a b
-    abs a           = absImage a
-    a * b           = mulImages a b
-    signum          = undefined
-    fromInteger     = undefined
-
 ---- Core Utility
 
+imagePtr :: Image a => a -> ForeignPtr CvMat
+imagePtr = unImageData . getImageData
+
 withImagePtr :: Image a => a -> (PCvMat -> IO b) -> IO b
-withImagePtr img f = withForeignPtr (getImageData img) f
+withImagePtr img f = withForeignPtr (imagePtr img) f
 
 unsafeImageOp :: Image a => a -> (PCvMat -> IO b) -> b
 unsafeImageOp img f = unsafePerformIO $ withImagePtr img f
@@ -76,7 +74,7 @@ foreign import ccall unsafe "zef_interop.h.h &zef_free_mat"
     c_zef_free_mat :: FunPtr (PCvMat -> IO ())
 
 newImageData :: PCvMat -> IO ImageData
-newImageData p = newForeignPtr c_zef_free_mat p
+newImageData p = ImageData <$> newForeignPtr c_zef_free_mat p
 
 foreign import ccall unsafe "core_c.h cvGetElemType"
     c_cvGetElemType :: PCvMat -> IO CInt
@@ -248,3 +246,4 @@ foreign import ccall unsafe "zef_interop.h zef_abs"
 
 absImage :: Image a => a -> a
 absImage = performUnaryOp c_zef_abs
+
