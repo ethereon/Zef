@@ -48,6 +48,22 @@ instance Image GrayImage where
     getImageData    = unGrayImage
     wrapImageData   = GrayImage
 
+instance Num RGBImage where
+    a + b           = addImages a b
+    a - b           = subImages a b
+    abs a           = absImage a
+    a * b           = mulImages a b
+    signum          = undefined
+    fromInteger     = undefined
+
+instance Num GrayImage where
+    a + b           = addImages a b
+    a - b           = subImages a b
+    abs a           = absImage a
+    a * b           = mulImages a b
+    signum          = undefined
+    fromInteger     = undefined
+
 ---- Core Utility
 
 withImagePtr :: Image a => a -> (PCvMat -> IO b) -> IO b
@@ -179,3 +195,56 @@ byteToFloat = imageConvertScale (#const CV_32F) (1/255)
 
 floatToByte :: Image a => a -> a
 floatToByte = imageConvertScale (#const CV_8U) 255
+
+---- Math
+
+type UnaryImageOp = PCvMat -> PCvMat -> IO ()
+type BinaryImageOp = PCvMat -> PCvMat -> PCvMat -> IO ()
+
+transformImage :: Image a => a -> UnaryImageOp -> a
+transformImage src f = unsafeImageOp src $ \pSrc -> do
+    dst <- mkSimilarImage src
+    withImagePtr dst $ \pDst -> do
+        f pSrc pDst
+    return dst
+
+transformImageBinary :: Image a => a -> a -> BinaryImageOp -> a
+transformImageBinary srcA srcB f = transformImage srcA $ \pSrcA pDst -> do
+    withImagePtr srcB $ \pSrcB -> do
+        f pSrcA pSrcB pDst
+
+performUnaryOp :: Image a => UnaryImageOp -> a -> a
+performUnaryOp c_f src = transformImage src c_f
+
+performBinaryOp :: Image a => BinaryImageOp -> a -> a -> a
+performBinaryOp c_f srcA srcB = transformImageBinary srcA srcB c_f
+
+foreign import ccall unsafe "core_c.h cvAdd"
+    c_cvAdd :: BinaryImageOp
+
+addImages :: Image a => a -> a -> a
+addImages = performBinaryOp c_cvAdd
+
+foreign import ccall unsafe "core_c.h cvSub"
+    c_cvSub :: BinaryImageOp
+
+subImages :: Image a => a -> a -> a
+subImages = performBinaryOp c_cvSub
+
+foreign import ccall unsafe "core_c.h cvMul"
+    c_cvMul :: PCvMat -> PCvMat -> PCvMat -> CDouble -> IO ()
+
+mulImages :: Image a => a -> a -> a
+mulImages = performBinaryOp $ \pSrcA pSrcB pDst -> c_cvMul pSrcA pSrcB pDst 1.0
+
+foreign import ccall unsafe "core_c.h cvLaplace"
+    c_cvLaplace :: PCvMat -> PCvMat -> CInt -> IO ()
+
+laplacian :: Image a => a -> a
+laplacian = performUnaryOp (\pSrc pDst -> c_cvLaplace pSrc pDst 3)
+
+foreign import ccall unsafe "zef_interop.h zef_abs"
+    c_zef_abs :: UnaryImageOp
+
+absImage :: Image a => a -> a
+absImage = performUnaryOp c_zef_abs

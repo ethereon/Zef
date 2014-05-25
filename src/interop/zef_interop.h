@@ -22,3 +22,7 @@ int zef_make_mat_type(int matDepth, int matType);
 int zef_get_width(const CvMat* mat);
 
 int zef_get_height(const CvMat* mat);
+
+/* Math */
+
+int zef_abs(const CvMat* src, CvMat* dst);

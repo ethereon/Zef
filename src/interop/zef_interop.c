@@ -55,3 +55,8 @@ int zef_get_height(const CvMat* mat)
 {
     return cvGetSize(mat).height;
 }
+
+int zef_abs(const CvMat* src, CvMat* dst)
+{
+    cvAbs(src, dst);
+}
