@@ -60,3 +60,8 @@ int zef_abs(const CvMat* src, CvMat* dst)
 {
     cvAbs(src, dst);
 }
+
+void zef_set(CvMat* img, double v)
+{
+    cvSet(img, cvScalar(v, v, v, v), NULL);
+}

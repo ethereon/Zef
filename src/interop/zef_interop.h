@@ -26,3 +26,5 @@ int zef_get_height(const CvMat* mat);
 /* Math */
 
 int zef_abs(const CvMat* src, CvMat* dst);
+
+void zef_set(CvMat* img, double v);

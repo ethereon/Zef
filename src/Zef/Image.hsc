@@ -1,6 +1,5 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Zef.Image where
 
@@ -29,20 +28,12 @@ data ImageSize = ImageSize { imageWidth  :: CInt
                            }
                            deriving (Eq, Show)
 
-instance Num ImageData where
-    a + b           = addImages a b
-    a - b           = subImages a b
-    abs a           = absImage a
-    a * b           = mulImages a b
-    signum          = undefined
-    fromInteger     = undefined
-
 class Image a where
     getImageData    :: a -> ImageData
     wrapImageData   :: ImageData -> a
 
 -- |A matrix containing 3 channel RGB image (stored as B G R).
-newtype RGBImage = RGBImage { unRGBImage :: ImageData } deriving (Eq, Show, Num)
+newtype RGBImage = RGBImage { unRGBImage :: ImageData } deriving (Eq, Show)
 
 instance Image ImageData where
     getImageData    = id
@@ -53,7 +44,7 @@ instance Image RGBImage where
     wrapImageData   = RGBImage
 
 -- |A matrix containing a single channel gray scale image.
-newtype GrayImage = GrayImage { unGrayImage :: ImageData } deriving (Eq, Show, Num)
+newtype GrayImage = GrayImage { unGrayImage :: ImageData } deriving (Eq, Show)
 
 instance Image GrayImage where
     getImageData    = unGrayImage
@@ -125,6 +116,12 @@ createMatrix rows cols mType = do
 createImage :: ImageSize -> CInt -> IO ImageData
 createImage imgSize mType = createMatrix (imageHeight imgSize) (imageWidth imgSize) mType
 
+foreign import ccall unsafe "zef_interop.h zef_set"
+    c_zef_set :: PCvMat -> CDouble -> IO ()
+
+setImage :: Image a => a -> CDouble -> IO ()
+setImage img v = withImagePtr img $ \pImg -> c_zef_set pImg v
+
 mkSingleChan :: Image a => a -> IO GrayImage
 mkSingleChan img = GrayImage <$> createImage (imageSize img) destType
     where destType = mkImageType (imageDepth img) 1
@@ -183,67 +180,13 @@ splitRGB img = unsafeImageOp img $ \pImg -> do
 foreign import ccall unsafe "zef_interop.h.h zef_convert_scale"
     c_zef_convert_scale :: PCvMat -> CInt -> CDouble -> IO PCvMat
 
-imageConvertScale :: Image a => CInt -> CDouble -> a -> a
-imageConvertScale destDepth scale img = wrapImageData $ unsafeImageOp img $ \pImg -> do
+scaleConvertImage :: Image a => CInt -> CDouble -> a -> a
+scaleConvertImage destDepth scale img = wrapImageData $ unsafeImageOp img $ \pImg -> do
     pOut <- c_zef_convert_scale pImg destDepth scale
     newImageData pOut
 
 byteToFloat :: Image a => a -> a
-byteToFloat = imageConvertScale (#const CV_32F) (1/255)
+byteToFloat = scaleConvertImage (#const CV_32F) (1/255)
 
 floatToByte :: Image a => a -> a
-floatToByte = imageConvertScale (#const CV_8U) 255
-
----- Math
-
-type UnaryImageOp = PCvMat -> PCvMat -> IO ()
-type BinaryImageOp = PCvMat -> PCvMat -> PCvMat -> IO ()
-
-transformImage :: Image a => a -> UnaryImageOp -> a
-transformImage src f = unsafeImageOp src $ \pSrc -> do
-    dst <- mkSimilarImage src
-    withImagePtr dst $ \pDst -> do
-        f pSrc pDst
-    return dst
-
-transformImageBinary :: Image a => a -> a -> BinaryImageOp -> a
-transformImageBinary srcA srcB f = transformImage srcA $ \pSrcA pDst -> do
-    withImagePtr srcB $ \pSrcB -> do
-        f pSrcA pSrcB pDst
-
-performUnaryOp :: Image a => UnaryImageOp -> a -> a
-performUnaryOp c_f src = transformImage src c_f
-
-performBinaryOp :: Image a => BinaryImageOp -> a -> a -> a
-performBinaryOp c_f srcA srcB = transformImageBinary srcA srcB c_f
-
-foreign import ccall unsafe "core_c.h cvAdd"
-    c_cvAdd :: BinaryImageOp
-
-addImages :: Image a => a -> a -> a
-addImages = performBinaryOp c_cvAdd
-
-foreign import ccall unsafe "core_c.h cvSub"
-    c_cvSub :: BinaryImageOp
-
-subImages :: Image a => a -> a -> a
-subImages = performBinaryOp c_cvSub
-
-foreign import ccall unsafe "core_c.h cvMul"
-    c_cvMul :: PCvMat -> PCvMat -> PCvMat -> CDouble -> IO ()
-
-mulImages :: Image a => a -> a -> a
-mulImages = performBinaryOp $ \pSrcA pSrcB pDst -> c_cvMul pSrcA pSrcB pDst 1.0
-
-foreign import ccall unsafe "core_c.h cvLaplace"
-    c_cvLaplace :: PCvMat -> PCvMat -> CInt -> IO ()
-
-laplacian :: Image a => a -> a
-laplacian = performUnaryOp (\pSrc pDst -> c_cvLaplace pSrc pDst 3)
-
-foreign import ccall unsafe "zef_interop.h zef_abs"
-    c_zef_abs :: UnaryImageOp
-
-absImage :: Image a => a -> a
-absImage = performUnaryOp c_zef_abs
-
+floatToByte = scaleConvertImage (#const CV_8U) 255
