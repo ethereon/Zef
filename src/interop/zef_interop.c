@@ -31,14 +31,14 @@ CvMat* zef_convert_scale(const CvMat* src, int destDepth, double scale)
     return out;
 }
 
-int zef_get_mat_depth(int matType)
+int zef_get_mat_depth(const CvMat* mat)
 {
-    return CV_MAT_DEPTH(matType);
+    return CV_MAT_DEPTH(cvGetElemType(mat));
 }
 
-int zef_get_mat_channel_count(int matType)
+int zef_get_mat_channel_count(const CvMat* mat)
 {
-    return CV_MAT_CN(matType);
+    return CV_MAT_CN(cvGetElemType(mat));
 }
 
 int zef_make_mat_type(int matDepth, int matChanCount)
