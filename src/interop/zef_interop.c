@@ -41,9 +41,9 @@ int zef_get_mat_channel_count(int matType)
     return CV_MAT_CN(matType);
 }
 
-int zef_make_mat_type(int matDepth, int matType)
+int zef_make_mat_type(int matDepth, int matChanCount)
 {
-    return CV_MAKETYPE(matDepth, matType);
+    return CV_MAKETYPE(matDepth, matChanCount);
 }
 
 int zef_get_width(const CvMat* mat)
@@ -56,7 +56,7 @@ int zef_get_height(const CvMat* mat)
     return cvGetSize(mat).height;
 }
 
-int zef_abs(const CvMat* src, CvMat* dst)
+void zef_abs(const CvMat* src, CvMat* dst)
 {
     cvAbs(src, dst);
 }
