@@ -122,9 +122,12 @@ foreign import ccall unsafe "zef_interop.h zef_set"
 setImage :: Image a => a -> CDouble -> IO ()
 setImage img v = withImagePtr img $ \pImg -> c_zef_set pImg v
 
+mkSimilarChan :: Image a => a -> CInt -> IO ImageData
+mkSimilarChan img n = createImage (imageSize img) destType
+    where destType = mkImageType (imageDepth img) n
+
 mkSingleChan :: Image a => a -> IO GrayImage
-mkSingleChan img = GrayImage <$> createImage (imageSize img) destType
-    where destType = mkImageType (imageDepth img) 1
+mkSingleChan img = GrayImage <$> mkSimilarChan img 1
 
 mkSimilarImage :: Image a => a -> IO a
 mkSimilarImage img = wrapImageData <$> createImage (imageSize img) (imageType img)
@@ -174,6 +177,19 @@ splitRGB img = unsafeImageOp img $ \pImg -> do
             withImagePtr b $ \pB -> do
                 c_cvSplit pImg pR pG pB
                 return [r, g, b]
+
+foreign import ccall unsafe "core_c.h cvMerge"
+    c_cvMerge :: PCvMat -> PCvMat -> PCvMat -> PCvMat -> PCvMat -> IO ()
+
+mergeRGB :: [GrayImage] -> RGBImage
+mergeRGB chans = unsafePerformIO $ do
+    merged <- RGBImage <$> mkSimilarChan (chans!!0) 3
+    withImagePtr merged $ \pMerged -> do
+        withImagePtr (chans!!0) $ \pR -> do
+            withImagePtr (chans!!1) $ \pG -> do
+                withImagePtr (chans!!2) $ \pB -> do
+                    c_cvMerge pR pG pB nullPtr pMerged
+                    return merged
 
 ---- Type Conversion
 
