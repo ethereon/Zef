@@ -98,3 +98,13 @@ sum images = unsafePerformIO $ do
                 c_cvAdd pAcc pImg pAcc
     return acc
 
+sumStacked :: Image a => [[a]] => [a]
+sumStacked stacks = unsafePerformIO $ do
+    stackOut <- mapM mkSimilarImage (stacks!!0)
+    forM_ stackOut $ \img -> setImage img 0
+    forM_ stacks $ \aStack ->
+        forM_ (zip stackOut aStack) $ \(levelAcc, anImg) ->
+            withImagePtr levelAcc $ \pLevelAcc ->
+                withImagePtr anImg $ \pImg ->
+                    c_cvAdd pLevelAcc pImg pLevelAcc
+    return stackOut
