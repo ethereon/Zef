@@ -14,6 +14,7 @@ library
     Zef.UI
     Zef.Image
     Zef.Math
+    Zef.Pyramid
   c-sources:
     src/interop/zef_interop.c
   include-dirs:
