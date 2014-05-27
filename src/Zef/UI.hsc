@@ -6,6 +6,7 @@ module Zef.UI where
 import Foreign.C.Types
 import Foreign.C.String
 import Zef.Image
+import Control.Monad
 
 #include <opencv2/highgui/highgui_c.h>
 
@@ -32,5 +33,8 @@ waitForKeyPressUntil secs = do
     keyCode <- c_cvWaitKey $ fromInteger $ round $ secs*1000
     return $ fromIntegral keyCode
 
-waitForKeyPress :: IO Int
-waitForKeyPress = waitForKeyPressUntil 0
+getKeyPress :: IO Int
+getKeyPress = waitForKeyPressUntil 0
+
+waitForKeyPress :: IO ()
+waitForKeyPress = void $ getKeyPress
