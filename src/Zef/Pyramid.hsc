@@ -16,15 +16,18 @@ foreign import ccall unsafe "core_c.h cvPyrUp"
 c_cvPyrUp :: PCvMat -> PCvMat -> IO ()
 c_cvPyrUp a b = c_cvPyrUp' a b (#const CV_GAUSSIAN_5x5)
 
-pyrUp :: Image a => a -> a
-pyrUp src = unsafeImageOp src $ \pSrc -> do
-    let srcSize = (imageSize src)
-        dstW    = (imageWidth srcSize)*2
-        dstH    = (imageHeight srcSize)*2
-    dst <- createImage (ImageSize dstW dstH) (imageType src)
+pyrUp' :: Image a => a -> ImageSize -> a
+pyrUp' src dstSize = unsafeImageOp src $ \pSrc -> do
+    dst <- createImage dstSize (imageType src)
     withImagePtr dst $ \pDst -> do
         c_cvPyrUp pSrc pDst
         return $ wrapImageData dst
+
+pyrUp :: Image a => a -> a
+pyrUp src = pyrUp' src $ ImageSize dstW dstH
+    where dstW    = (imageWidth srcSize)*2
+          dstH    = (imageHeight srcSize)*2
+          srcSize = (imageSize src)
 
 foreign import ccall unsafe "core_c.h cvPyrDown"
     c_cvPyrDown' :: PCvMat -> PCvMat -> CInt -> IO ()
@@ -72,6 +75,6 @@ collapsePyramid :: Image a => [a] -> a
 collapsePyramid pyr = sumUp lowest rest
     where lowest:rest    = reverse pyr 
           sumUp acc lvls = case lvls of
-            x:xs -> sumUp ((pyrUp acc).+x) xs
+            x:xs -> sumUp ((pyrUp' acc $ imageSize x).+x) xs
             []    -> acc
             
