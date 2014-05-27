@@ -100,6 +100,9 @@ sqrt = pow' 0.5
 scale :: Image a => a -> CDouble -> a
 scale img s = scaleConvertImage (imageDepth img) s img
 
+(~*) :: Image a => a -> CDouble -> a
+(~*) = scale
+
 sum :: Image a => [a] -> a
 sum images = unsafePerformIO $ do
     acc <- mkSimilarImage (images!!0)
