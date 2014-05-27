@@ -190,3 +190,28 @@ byteToFloat = scaleConvertImage (#const CV_32F) (1/255)
 
 floatToByte :: Image a => a -> a
 floatToByte = scaleConvertImage (#const CV_8U) 255
+
+---- Transformation Utility
+
+type UnaryImageOp = PCvMat -> PCvMat -> IO ()
+
+type BinaryImageOp = PCvMat -> PCvMat -> PCvMat -> IO ()
+
+transformImage :: Image a => a -> UnaryImageOp -> a
+transformImage src f = unsafeImageOp src $ \pSrc -> do
+    dst <- mkSimilarImage src
+    withImagePtr dst $ \pDst -> do
+        f pSrc pDst
+    return dst
+
+transformImageBinary :: Image a => a -> a -> BinaryImageOp -> a
+transformImageBinary srcA srcB f = transformImage srcA $ \pSrcA pDst -> do
+    withImagePtr srcB $ \pSrcB -> do
+        f pSrcA pSrcB pDst
+
+performUnaryOp :: Image a => UnaryImageOp -> a -> a
+performUnaryOp c_f src = transformImage src c_f
+
+performBinaryOp :: Image a => BinaryImageOp -> a -> a -> a
+performBinaryOp c_f srcA srcB = transformImageBinary srcA srcB c_f
+

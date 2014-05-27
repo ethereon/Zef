@@ -4,6 +4,7 @@
 module Zef.Math where
 
 import Foreign.C.Types
+import Foreign.Ptr
 import System.IO.Unsafe
 import Control.Monad
 import Zef.Image
@@ -12,30 +13,11 @@ import Prelude  hiding (div)
 #include <zef_interop.h>
 #include <opencv2/core/core_c.h>
 
-type UnaryImageOp = PCvMat -> PCvMat -> IO ()
-
-type BinaryImageOp = PCvMat -> PCvMat -> PCvMat -> IO ()
-
-transformImage :: Image a => a -> UnaryImageOp -> a
-transformImage src f = unsafeImageOp src $ \pSrc -> do
-    dst <- mkSimilarImage src
-    withImagePtr dst $ \pDst -> do
-        f pSrc pDst
-    return dst
-
-transformImageBinary :: Image a => a -> a -> BinaryImageOp -> a
-transformImageBinary srcA srcB f = transformImage srcA $ \pSrcA pDst -> do
-    withImagePtr srcB $ \pSrcB -> do
-        f pSrcA pSrcB pDst
-
-performUnaryOp :: Image a => UnaryImageOp -> a -> a
-performUnaryOp c_f src = transformImage src c_f
-
-performBinaryOp :: Image a => BinaryImageOp -> a -> a -> a
-performBinaryOp c_f srcA srcB = transformImageBinary srcA srcB c_f
-
 foreign import ccall unsafe "core_c.h cvAdd"
-    c_cvAdd :: BinaryImageOp
+    c_cvAdd' :: PCvMat -> PCvMat -> PCvMat -> PCvMat -> IO ()
+
+c_cvAdd :: BinaryImageOp
+c_cvAdd srcA srcB dst = c_cvAdd' srcA srcB dst nullPtr
 
 add :: Image a => a -> a -> a
 add = performBinaryOp c_cvAdd
@@ -44,7 +26,10 @@ add = performBinaryOp c_cvAdd
 (.+) = add
 
 foreign import ccall unsafe "core_c.h cvSub"
-    c_cvSub :: BinaryImageOp
+    c_cvSub' :: PCvMat -> PCvMat -> PCvMat -> PCvMat -> IO ()
+
+c_cvSub :: BinaryImageOp
+c_cvSub srcA srcB dst = c_cvSub' srcA srcB dst nullPtr
 
 sub :: Image a => a -> a -> a
 sub = performBinaryOp c_cvSub
