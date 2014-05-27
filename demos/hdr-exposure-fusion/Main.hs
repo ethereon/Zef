@@ -1,3 +1,8 @@
+--  HDR Exposure Fusion using Zef
+
+--  Implements the algorithm as described in Merten's paper:
+--  http://research.edm.uhasselt.be/~tmertens/papers/exposure_fusion_reduced.pdf
+
 module Main where
 
 import Zef.Image
@@ -7,9 +12,6 @@ import Zef.UI
 import Zef.FileUtils
 import System.Environment
 import System.IO
-
-numPyrLevels :: Int
-numPyrLevels = 3
 
 contrast :: GrayImage -> GrayImage
 contrast = Img.abs . Img.laplacian
@@ -26,9 +28,10 @@ weightMap src = (contrast gs).*(saturation src)
 
 blendImagePyr :: RGBImage -> GrayImage -> [RGBImage]
 blendImagePyr img weights = map blendLevel $ zip imgPyrs wtPyrs
-  where imgPyrs     = buildLaplacianPyramid img numPyrLevels
-        wtPyrs      = buildPyramid weights numPyrLevels
-        blendLevel  = \(lvl, w) -> mergeRGB (map (\c -> c.*w) (splitRGB lvl))
+  where imgPyrs       = buildLaplacianPyramid img numPyrLevels
+        wtPyrs        = buildPyramid weights numPyrLevels
+        blendLevel    = \(lvl, w) -> mergeRGB (map (\c -> c.*w) (splitRGB lvl))
+        numPyrLevels  = maxPyrLevels $ imageSize img
 
 exposureFusion :: [RGBImage] -> RGBImage
 exposureFusion images = floatToByte $ collapsePyramid pyrBlended
@@ -53,4 +56,4 @@ main = do
             saveImage result outputFilename
           _ -> do
             showImage result
-            waitForKeyPress        
+            waitForKeyPress
