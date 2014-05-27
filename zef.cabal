@@ -15,6 +15,7 @@ library
     Zef.Image
     Zef.Math
     Zef.Pyramid
+    Zef.FileUtils
   c-sources:
     src/interop/zef_interop.c
   include-dirs:
@@ -26,7 +27,9 @@ library
     opencv_imgproc
   extra-lib-dirs: /usr/local/lib
   build-depends:
-    base < 5
+    base < 5,
+    directory,
+    filepath
   default-language: Haskell2010
   ghc-options: -Wall
 
