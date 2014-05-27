@@ -154,6 +154,16 @@ loadImage = loadImageCast RGBImage (#const CV_LOAD_IMAGE_COLOR)
 loadGrayscaleImage :: String -> IO GrayImage
 loadGrayscaleImage = loadImageCast GrayImage (#const CV_LOAD_IMAGE_GRAYSCALE)
 
+---- Writing Images
+
+foreign import ccall unsafe "highui_c.h cvSaveImage"
+    c_cvSaveImage :: CString -> PCvMat -> Ptr CInt -> IO ()
+
+saveImage :: Image a => a -> FilePath -> IO ()
+saveImage img path = withImagePtr img $ \pImg ->
+    withCString path $ \pPath ->
+        c_cvSaveImage pPath pImg nullPtr
+
 ---- Color + Channel Conversion
 
 foreign import ccall unsafe "zef_interop.h.h zef_rgb_to_gray"
