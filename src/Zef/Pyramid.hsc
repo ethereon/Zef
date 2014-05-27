@@ -77,4 +77,7 @@ collapsePyramid pyr = sumUp lowest rest
           sumUp acc lvls = case lvls of
             x:xs -> sumUp ((pyrUp' acc $ imageSize x).+x) xs
             []    -> acc
-            
+
+maxPyrLevels :: ImageSize -> Int
+maxPyrLevels imgSize = floor $ (logS :: Float)/(log 2)
+    where logS = log $ fromIntegral $ min (imageWidth imgSize) (imageHeight imgSize)
