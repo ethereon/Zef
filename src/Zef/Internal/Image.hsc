@@ -27,11 +27,11 @@ withImagePtr img f = withForeignPtr (imagePtr img) f
 unsafeImageOp :: Image a => a -> (PCvMat -> IO b) -> b
 unsafeImageOp img f = unsafePerformIO $ withImagePtr img f
 
-foreign import ccall unsafe "zef_interop.h.h &zef_free_mat"
-    c_zef_free_mat :: FunPtr (PCvMat -> IO ())
+foreign import ccall unsafe "zef_interop.h.h &zef_release_mat"
+    c_zef_release_mat :: FunPtr (PCvMat -> IO ())
 
 newImageData :: PCvMat -> IO ImageData
-newImageData p = ImageData <$> newForeignPtr c_zef_free_mat p
+newImageData p = ImageData <$> newForeignPtr c_zef_release_mat p
 
 foreign import ccall unsafe "core_c.h cvGetElemType"
     c_cvGetElemType :: PCvMat -> IO CInt
@@ -71,12 +71,12 @@ imageSize img = unsafeImageOp img $ \pImg -> do
 
 ---- Creating Images
 
-foreign import ccall unsafe "core_c.h cvCreateMat"
-    c_cvCreateMat :: CInt -> CInt -> CInt -> IO PCvMat
+foreign import ccall unsafe "zef_interop.h zef_create_mat"
+    c_zef_create_mat :: CInt -> CInt -> CInt -> IO PCvMat
 
 createMatrix :: CInt -> CInt -> CInt -> IO ImageData
 createMatrix rows cols mType = do
-    pMat <- c_cvCreateMat rows cols mType
+    pMat <- c_zef_create_mat rows cols mType
     newImageData pMat
 
 createImage :: ImageSize -> CInt -> IO ImageData

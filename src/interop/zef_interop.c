@@ -1,9 +1,14 @@
 #include "zef_interop.h"
 
-void zef_free_mat(CvMat* p)
+CvMat* zef_create_mat(int rows, int cols, int type)
 {
-    void* x = p;
-    cvFree(&x);
+    return cvCreateMat(rows, cols, type);
+}
+
+void zef_release_mat(CvMat* p)
+{
+    CvMat* x = p;
+    cvReleaseMat(&x);
 }
 
 CvMat* zef_rgb_to_gray(const CvMat* src)
