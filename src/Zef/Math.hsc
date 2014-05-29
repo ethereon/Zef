@@ -1,5 +1,5 @@
+{-# LANGUAGE CPP                      #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
-{-# LANGUAGE EmptyDataDecls #-}
 
 module Zef.Math where
 
@@ -7,8 +7,11 @@ import Foreign.C.Types
 import Foreign.Ptr
 import System.IO.Unsafe
 import Control.Monad
-import Zef.Image
 import Prelude  hiding (div)
+
+import Zef.Internal.Types
+import Zef.Internal.Image
+import Zef.Image
 
 #include <zef_interop.h>
 #include <opencv2/core/core_c.h>

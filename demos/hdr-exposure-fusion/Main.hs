@@ -5,7 +5,7 @@
 
 module Main where
 
-import Zef.Image
+import Zef
 import Zef.Math as Img
 import Zef.Pyramid
 import Zef.UI

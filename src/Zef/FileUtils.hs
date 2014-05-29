@@ -1,11 +1,12 @@
 module Zef.FileUtils where
 
-import Zef.Image
-
-import System.Directory
 import Control.Applicative
-import System.FilePath
 import Data.List
+import System.Directory
+import System.FilePath
+
+import Zef.Image
+import Zef.Internal.Types
 
 imageExtensions :: [String]
 imageExtensions = [".png", ".jpg", ".jpeg", ".bmp", ".tif"]

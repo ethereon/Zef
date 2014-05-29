@@ -1,12 +1,14 @@
+{-# LANGUAGE CPP                      #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
-{-# LANGUAGE CPP #-}
 
 module Zef.UI where
 
 import Foreign.C.Types
 import Foreign.C.String
-import Zef.Image
 import Control.Monad
+
+import Zef.Internal.Image
+import Zef.Internal.Types
 
 #include <opencv2/highgui/highgui_c.h>
 

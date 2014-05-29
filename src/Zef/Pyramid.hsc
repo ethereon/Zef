@@ -1,3 +1,6 @@
+{-# LANGUAGE CPP                      #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 module Zef.Pyramid where
 
 import Foreign.C.Types
@@ -6,6 +9,8 @@ import System.IO.Unsafe
 
 import Zef.Image
 import Zef.Math as Im
+import Zef.Internal.Types
+import Zef.Internal.Image
 
 #include <zef_interop.h>
 #include <opencv2/core/core_c.h>
@@ -39,7 +44,7 @@ pyrDown :: Image a => a -> a
 pyrDown src = unsafeImageOp src $ \pSrc -> do
     let srcSize = (imageSize src)
         dstW    = floor $ ((fromIntegral (imageWidth srcSize) :: Float)+1)/2
-        dstH    = floor $ ((fromIntegral (imageHeight srcSize) :: Float)+1)/2        
+        dstH    = floor $ ((fromIntegral (imageHeight srcSize) :: Float)+1)/2
     dst <- createImage (ImageSize dstW dstH) (imageType src)
     withImagePtr dst $ \pDst -> do
         c_cvPyrDown pSrc pDst
@@ -60,10 +65,10 @@ buildLaplacianPyramid img n = unsafePerformIO $ do
         let high   = pyrs!!(i-1)
             low    = pyrs!!i
         lowUp <- mkSimilarImage high
-        withImagePtr low $ \pLow -> do            
+        withImagePtr low $ \pLow -> do
             withImagePtr lowUp $ \pLowUp -> do
-                -- Upsample lower level.            
-                c_cvPyrUp pLow pLowUp                
+                -- Upsample lower level.
+                c_cvPyrUp pLow pLowUp
                 withImagePtr high $ \pHigh -> do
                     -- Subtract from higher level to get the Laplacian level.
                     c_cvSub pHigh pLowUp pHigh
@@ -73,7 +78,7 @@ buildLaplacianPyramid img n = unsafePerformIO $ do
 
 collapsePyramid :: Image a => [a] -> a
 collapsePyramid pyr = sumUp lowest rest
-    where lowest:rest    = reverse pyr 
+    where lowest:rest    = reverse pyr
           sumUp acc lvls = case lvls of
             x:xs -> sumUp ((pyrUp' acc $ imageSize x).+x) xs
             []    -> acc
