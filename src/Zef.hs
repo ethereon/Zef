@@ -12,10 +12,11 @@
 module Zef
     ( RGBImage
     , GrayImage
+    , ImageSize(..)
     , imageSize
     , module Zef.Image
     ) where
 
-import Zef.Internal.Types (RGBImage, GrayImage)
+import Zef.Internal.Types (RGBImage, GrayImage, ImageSize(..))
 import Zef.Internal.Image (imageSize)
 import Zef.Image

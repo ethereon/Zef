@@ -18,6 +18,18 @@ import Zef.Internal.Types
 
 ---- Constructing Images
 
+uniformImage :: Image a => CInt -> ImageSize -> CDouble -> a
+uniformImage imgType imgSize v = unsafePerformIO $ do
+    img <- createImage imgSize imgType
+    setImage img v
+    return $ wrapImageData img
+
+uniformRGBImage :: ImageSize -> CDouble -> RGBImage
+uniformRGBImage = uniformImage (#const CV_32FC3)
+
+uniformGrayImage :: ImageSize -> CDouble -> GrayImage
+uniformGrayImage = uniformImage (#const CV_32FC1)
+
 mkSingleChan :: Image a => a -> IO GrayImage
 mkSingleChan img = GrayImage <$> mkSimilarChan img 1
 
