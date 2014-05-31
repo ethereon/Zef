@@ -89,10 +89,6 @@ floatToByte = scaleConvertImage (#const CV_8U) 255
 
 ---- Transformation Utility
 
-type UnaryImageOp = PCvMat -> PCvMat -> IO ()
-
-type BinaryImageOp = PCvMat -> PCvMat -> PCvMat -> IO ()
-
 transformImage :: Image a => a -> UnaryImageOp -> a
 transformImage src f = unsafeImageOp src $ \pSrc -> do
     dst <- mkSimilarImage src

@@ -44,3 +44,7 @@ newtype GrayImage = GrayImage { unGrayImage :: ImageData } deriving (Eq, Show)
 instance Image GrayImage where
     getImageData    = unGrayImage
     wrapImageData   = GrayImage
+
+type UnaryImageOp = PCvMat -> PCvMat -> IO ()
+
+type BinaryImageOp = PCvMat -> PCvMat -> PCvMat -> IO ()
