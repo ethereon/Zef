@@ -13,7 +13,7 @@ import Zef.Internal.Types
 import Zef.Internal.Image
 import Zef.Image
 
-#include <zef_interop.h>
+#include <zef_core.h>
 #include <opencv2/core/core_c.h>
 
 foreign import ccall unsafe "core_c.h cvAdd"
@@ -64,7 +64,7 @@ foreign import ccall unsafe "core_c.h cvLaplace"
 laplacian :: Image a => a -> a
 laplacian = performUnaryOp (\pSrc pDst -> c_cvLaplace pSrc pDst 3)
 
-foreign import ccall unsafe "zef_interop.h zef_abs"
+foreign import ccall unsafe "zef_core.h zef_abs"
     c_zef_abs :: UnaryImageOp
 
 abs :: Image a => a -> a

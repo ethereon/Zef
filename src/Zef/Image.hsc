@@ -12,7 +12,7 @@ import System.IO.Unsafe
 import Zef.Internal.Image
 import Zef.Internal.Types
 
-#include <zef_interop.h>
+#include <zef_core.h>
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
 
@@ -44,7 +44,7 @@ saveImage img path = withImagePtr img $ \pImg ->
 
 ---- Color + Channel Conversion
 
-foreign import ccall unsafe "zef_interop.h.h zef_rgb_to_gray"
+foreign import ccall unsafe "zef_core.h.h zef_rgb_to_gray"
     c_zef_rgb_to_gray :: PCvMat -> IO PCvMat
 
 rgbToGray :: RGBImage -> GrayImage

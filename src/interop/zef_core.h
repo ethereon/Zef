@@ -1,6 +1,11 @@
 #include <opencv2/core/core_c.h>
 #include <opencv2/imgproc/imgproc_c.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* Construction / Destruction  */
 
 CvMat* zef_create_mat(int rows, int cols, int type);
@@ -30,3 +35,8 @@ int zef_get_height(const CvMat* mat);
 void zef_abs(const CvMat* src, CvMat* dst);
 
 void zef_set(CvMat* img, double v);
+
+#ifdef __cplusplus
+}
+#endif
+

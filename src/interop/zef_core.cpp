@@ -1,4 +1,4 @@
-#include "zef_interop.h"
+#include "zef_core.h"
 
 CvMat* zef_create_mat(int rows, int cols, int type)
 {

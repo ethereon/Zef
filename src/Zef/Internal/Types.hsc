@@ -8,7 +8,7 @@ import Foreign.C.Types
 import Foreign.ForeignPtr
 import Foreign.Ptr
 
-#include <zef_interop.h>
+#include <zef_core.h>
 #include <opencv2/core/core_c.h>
 
 -- |Opaque type corresponding to OpenCV's CvMat type.

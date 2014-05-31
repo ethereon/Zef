@@ -19,7 +19,7 @@ library
     Zef.Pyramid
     Zef.FileUtils
   c-sources:
-    src/interop/zef_interop.c
+    src/interop/zef_Core.cpp
   include-dirs:
     /usr/local/include/opencv2
     src/interop
@@ -27,6 +27,7 @@ library
     opencv_core
     opencv_highgui
     opencv_imgproc
+    c++
   extra-lib-dirs: /usr/local/lib
   build-depends:
     base < 5,

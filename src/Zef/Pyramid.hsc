@@ -12,7 +12,7 @@ import Zef.Math as Im
 import Zef.Internal.Types
 import Zef.Internal.Image
 
-#include <zef_interop.h>
+#include <zef_core.h>
 #include <opencv2/core/core_c.h>
 
 foreign import ccall unsafe "core_c.h cvPyrUp"

@@ -12,7 +12,7 @@ import System.IO.Unsafe
 
 import Zef.Internal.Types
 
-#include <zef_interop.h>
+#include <zef_core.h>
 #include <opencv2/core/core_c.h>
 #include <opencv2/highgui/highgui_c.h>
 
@@ -27,7 +27,7 @@ withImagePtr img f = withForeignPtr (imagePtr img) f
 unsafeImageOp :: Image a => a -> (PCvMat -> IO b) -> b
 unsafeImageOp img f = unsafePerformIO $ withImagePtr img f
 
-foreign import ccall unsafe "zef_interop.h.h &zef_release_mat"
+foreign import ccall unsafe "zef_core.h.h &zef_release_mat"
     c_zef_release_mat :: FunPtr (PCvMat -> IO ())
 
 newImageData :: PCvMat -> IO ImageData
@@ -39,28 +39,28 @@ foreign import ccall unsafe "core_c.h cvGetElemType"
 imageType :: Image a => a -> CInt
 imageType img = unsafeImageOp img $ \pImg -> c_cvGetElemType pImg
 
-foreign import ccall unsafe "zef_interop.h zef_get_mat_depth"
+foreign import ccall unsafe "zef_core.h zef_get_mat_depth"
     c_zef_get_mat_depth :: PCvMat -> IO CInt
 
 imageDepth :: Image a => a -> CInt
 imageDepth img = unsafeImageOp img $ \pImg -> c_zef_get_mat_depth pImg
 
-foreign import ccall unsafe "zef_interop.h zef_get_mat_channel_count"
+foreign import ccall unsafe "zef_core.h zef_get_mat_channel_count"
     c_zef_get_mat_channel_count :: PCvMat -> IO CInt
 
 imageChannelCount :: Image a => a -> CInt
 imageChannelCount img = unsafeImageOp img $ \pImg -> c_zef_get_mat_channel_count pImg
 
-foreign import ccall unsafe "zef_interop.h zef_make_mat_type"
+foreign import ccall unsafe "zef_core.h zef_make_mat_type"
     c_zef_make_mat_type :: CInt -> CInt -> CInt
 
 mkImageType :: CInt -> CInt -> CInt
 mkImageType = c_zef_make_mat_type
 
-foreign import ccall unsafe "zef_interop.h zef_get_width"
+foreign import ccall unsafe "zef_core.h zef_get_width"
     c_zef_get_width :: PCvMat -> IO CInt
 
-foreign import ccall unsafe "zef_interop.h zef_get_height"
+foreign import ccall unsafe "zef_core.h zef_get_height"
     c_zef_get_height :: PCvMat -> IO CInt
 
 imageSize :: Image a => a -> ImageSize
@@ -71,7 +71,7 @@ imageSize img = unsafeImageOp img $ \pImg -> do
 
 ---- Creating Images
 
-foreign import ccall unsafe "zef_interop.h zef_create_mat"
+foreign import ccall unsafe "zef_core.h zef_create_mat"
     c_zef_create_mat :: CInt -> CInt -> CInt -> IO PCvMat
 
 createMatrix :: CInt -> CInt -> CInt -> IO ImageData
@@ -82,7 +82,7 @@ createMatrix rows cols mType = do
 createImage :: ImageSize -> CInt -> IO ImageData
 createImage imgSize mType = createMatrix (imageHeight imgSize) (imageWidth imgSize) mType
 
-foreign import ccall unsafe "zef_interop.h zef_set"
+foreign import ccall unsafe "zef_core.h zef_set"
     c_zef_set :: PCvMat -> CDouble -> IO ()
 
 setImage :: Image a => a -> CDouble -> IO ()
@@ -110,7 +110,7 @@ loadImageCast f mode imgPath = f <$> loadImageWithMode mode imgPath
 
 ---- Type Conversion
 
-foreign import ccall unsafe "zef_interop.h.h zef_convert_scale"
+foreign import ccall unsafe "zef_core.h.h zef_convert_scale"
     c_zef_convert_scale :: PCvMat -> CInt -> CDouble -> IO PCvMat
 
 scaleConvertImage :: Image a => CInt -> CDouble -> a -> a
