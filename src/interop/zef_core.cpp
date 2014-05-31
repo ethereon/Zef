@@ -63,6 +63,7 @@ int zef_get_height(const CvMat* mat)
 
 void zef_abs(const CvMat* src, CvMat* dst)
 {
+    //We need to wrap cvAbs since it's a macro.
     cvAbs(src, dst);
 }
 
