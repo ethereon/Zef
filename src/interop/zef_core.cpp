@@ -1,4 +1,7 @@
 #include "zef_core.h"
+#include <opencv2/core/core.hpp>
+#include <stdint.h>
+#include <algorithm>
 
 CvMat* zef_create_mat(int rows, int cols, int type)
 {
@@ -70,4 +73,32 @@ void zef_abs(const CvMat* src, CvMat* dst)
 void zef_set(CvMat* img, double v)
 {
     cvSet(img, cvScalar(v, v, v, v), NULL);
+}
+
+static bool almost_equal(const float& vA, const float& vB)
+{
+    static const float epsilon = 1E-5;
+    return std::abs(vA - vB) < epsilon;
+}
+
+int zef_mat_eq(CvMat* a, CvMat* b)
+{
+    cv::Mat matA = cv::cvarrToMat(a);
+    cv::Mat matB = cv::cvarrToMat(b);
+    int depthA = zef_get_mat_depth(a);
+    int depthB = zef_get_mat_depth(b);
+    if(depthA!=depthB)
+    {
+        return 0;
+    }
+    if(depthA==CV_8U)
+    {
+        return std::equal(matA.begin<uint8_t>(), matA.end<uint8_t>(), matB.begin<uint8_t>());
+    }
+    else if(depthA==CV_32F)
+    {
+        return std::equal(matA.begin<float>(), matA.end<float>(), matB.begin<float>(), almost_equal);
+    }
+    assert(0 && "Unexpected matrix type encountered");
+    return 0;
 }
