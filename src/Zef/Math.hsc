@@ -116,7 +116,7 @@ sum images = uncascade $ unsafePerformIO $ do
     return $ BufferedCascade { cscSource  = acc }
 {-# INLINE sum #-}
 
-sumStacked :: Image a => [[a]] => [a]
+sumStacked :: Image a => [[a]] -> [a]
 sumStacked stacks = unsafePerformIO $ do
     stackOut <- mapM mkSimilarImage (stacks!!0)
     forM_ stackOut $ \img -> setImage img 0
