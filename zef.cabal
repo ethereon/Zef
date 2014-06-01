@@ -13,6 +13,8 @@ library
     Zef
     Zef.Internal.Types
     Zef.Internal.Image
+    Zef.Internal.Fusion
+    Zef.Internal.FusionOps
     Zef.Image
     Zef.Math
     Zef.UI
