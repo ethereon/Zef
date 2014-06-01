@@ -21,7 +21,7 @@ library
     Zef.Pyramid
     Zef.FileUtils
   c-sources:
-    src/interop/zef_Core.cpp
+    src/interop/zef_core.cpp
   include-dirs:
     /usr/local/include/opencv2
     src/interop
