@@ -10,13 +10,22 @@
 --
 
 module Zef
-    ( RGBImage
+    (
+    -- Types
+      RGBImage
+
+    -- Image
     , GrayImage
     , ImageSize(..)
     , imageSize
     , module Zef.Image
+
+    --  Primitives
+    , Rect(..)
+    , intersectRect
     ) where
 
 import Zef.Internal.Types (RGBImage, GrayImage, ImageSize(..))
 import Zef.Internal.Image (imageSize)
 import Zef.Image
+import Zef.Primitives

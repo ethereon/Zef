@@ -17,6 +17,7 @@ library
     Zef.Internal.FusionOps
     Zef.Image
     Zef.Math
+    Zef.Primitives
     Zef.UI
     Zef.Pyramid
     Zef.FileUtils
