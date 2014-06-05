@@ -7,10 +7,13 @@ import Control.Applicative
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
+import Foreign.Storable
+import Foreign.Marshal.Alloc
 import System.IO.Unsafe
 
 import Zef.Internal.Image
 import Zef.Internal.Types
+import Zef.Primitives
 
 #include <zef_core.h>
 #include <opencv2/core/core_c.h>
@@ -35,6 +38,17 @@ mkSingleChan img = GrayImage <$> mkSimilarChan img 1
 
 mkSimilarImage :: Image a => a -> IO a
 mkSimilarImage img = wrapImageData <$> createImage (imageSize img) (imageType img)
+
+foreign import ccall unsafe "zef_core.h zef_create_roi"
+    c_zef_create_roi :: PCvMat -> Ptr Rect -> IO PCvMat
+
+getROI :: Image a => a -> Rect -> a
+getROI img rect = unsafePerformIO $ withImagePtr img $ \pImg -> do
+    alloca $ \pRect -> do
+        poke pRect rect
+        pRoi <- c_zef_create_roi pImg pRect
+        roi <- newImageData pRoi
+        return $ wrapImageData roi
 
 ---- Reading Images
 

@@ -14,6 +14,16 @@ void zef_release_mat(CvMat* p)
     cvReleaseMat(&x);
 }
 
+CvMat* zef_create_roi(const CvMat* src, const CvRect* rect)
+{
+    CvSize srcSize = cvGetSize(src);
+    CvMat* roi = cvCreateMatHeader(srcSize.height, //Rows
+                                   srcSize.width,  //Cols
+                                   cvGetElemType(src));
+    cvGetSubRect(src, roi, *rect);
+    return roi;
+}
+
 CvMat* zef_rgb_to_gray(const CvMat* src)
 {
     CvSize srcSize = cvGetSize(src);

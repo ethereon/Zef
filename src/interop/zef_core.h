@@ -12,6 +12,8 @@ CvMat* zef_create_mat(int rows, int cols, int type);
 
 void zef_release_mat(CvMat* p);
 
+CvMat* zef_create_roi(const CvMat* src, const CvRect* rect);
+
 /* Matrix Conversion */
 
 CvMat* zef_rgb_to_gray(const CvMat* src);
