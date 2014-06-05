@@ -9,6 +9,7 @@ import Foreign.C.Types
 import Foreign.Ptr
 import Foreign.Storable
 import Foreign.Marshal.Alloc
+import Foreign.ForeignPtr.Safe
 import System.IO.Unsafe
 
 import Zef.Internal.Image
@@ -49,6 +50,11 @@ getROI img rect = unsafePerformIO $ withImagePtr img $ \pImg -> do
         pRoi <- c_zef_create_roi pImg pRect
         roi <- newImageData pRoi
         return $ wrapImageData roi
+
+foreignRGBImage :: PCvMat -> IO RGBImage
+foreignRGBImage pMat = do
+    fpMat <- newForeignPtr_ pMat
+    return $ wrapImageData $ ImageData fpMat
 
 ---- Reading Images
 
