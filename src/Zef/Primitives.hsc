@@ -13,6 +13,7 @@ data Rect = Rect { rectX :: CInt
                  , rectW :: CInt                     
                  , rectH :: CInt
                  }
+                 deriving (Eq, Show)
 
 instance Storable Rect where
     sizeOf    _ = (#size CvSize)
