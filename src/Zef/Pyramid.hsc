@@ -26,7 +26,7 @@ pyrUp' src dstSize = unsafeImageOp src $ \pSrc -> do
     dst <- createImage dstSize (imageType src)
     withImagePtr dst $ \pDst -> do
         c_cvPyrUp pSrc pDst
-        return $ wrapImageData dst
+        return $ fromImageData dst
 
 pyrUp :: Image a => a -> a
 pyrUp src = pyrUp' src $ ImageSize dstW dstH
@@ -48,7 +48,7 @@ pyrDown src = unsafeImageOp src $ \pSrc -> do
     dst <- createImage (ImageSize dstW dstH) (imageType src)
     withImagePtr dst $ \pDst -> do
         c_cvPyrDown pSrc pDst
-        return $ wrapImageData dst
+        return $ fromImageData dst
 
 -- | Constructs a Gaussian pyramid for the given image.
 -- The returned list contains the given image at the head,

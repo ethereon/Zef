@@ -19,7 +19,7 @@ import Zef.Internal.Types
 ---- Core Utility
 
 imagePtr :: Image a => a -> ForeignPtr CvMat
-imagePtr = unImageData . getImageData
+imagePtr = unImageData . toImageData
 
 withImagePtr :: Image a => a -> (PCvMat -> IO b) -> IO b
 withImagePtr img f = withForeignPtr (imagePtr img) f
@@ -114,6 +114,6 @@ foreign import ccall unsafe "zef_core.h.h zef_convert_scale"
     c_zef_convert_scale :: PCvMat -> CInt -> CDouble -> IO PCvMat
 
 scaleConvertImage :: Image a => CInt -> CDouble -> a -> a
-scaleConvertImage destDepth scale img = wrapImageData $ unsafeImageOp img $ \pImg -> do
+scaleConvertImage destDepth scale img = fromImageData $ unsafeImageOp img $ \pImg -> do
     pOut <- c_zef_convert_scale pImg destDepth scale
     newImageData pOut

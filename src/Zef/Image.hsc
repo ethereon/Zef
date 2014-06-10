@@ -26,7 +26,7 @@ uniformImage :: Image a => CInt -> ImageSize -> CDouble -> a
 uniformImage imgType imgSize v = unsafePerformIO $ do
     img <- createImage imgSize imgType
     setImage img v
-    return $ wrapImageData img
+    return $ fromImageData img
 
 uniformRGBImage :: ImageSize -> CDouble -> RGBImage
 uniformRGBImage = uniformImage (#const CV_32FC3)
@@ -38,7 +38,7 @@ mkSingleChan :: Image a => a -> IO GrayImage
 mkSingleChan img = GrayImage <$> mkSimilarChan img 1
 
 mkSimilarImage :: Image a => a -> IO a
-mkSimilarImage img = wrapImageData <$> createImage (imageSize img) (imageType img)
+mkSimilarImage img = fromImageData <$> createImage (imageSize img) (imageType img)
 
 foreign import ccall unsafe "zef_core.h zef_create_roi"
     c_zef_create_roi :: PCvMat -> Ptr Rect -> IO PCvMat
@@ -49,12 +49,12 @@ getROI img rect = unsafePerformIO $ withImagePtr img $ \pImg -> do
         poke pRect rect
         pRoi <- c_zef_create_roi pImg pRect
         roi <- newImageData pRoi
-        return $ wrapImageData roi
+        return $ fromImageData roi
 
 foreignRGBImage :: PCvMat -> IO RGBImage
 foreignRGBImage pMat = do
     fpMat <- newForeignPtr_ pMat
-    return $ wrapImageData $ ImageData fpMat
+    return $ fromImageData $ ImageData fpMat
 
 ---- Reading Images
 

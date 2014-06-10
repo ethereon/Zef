@@ -26,8 +26,8 @@ data ImageSize = ImageSize { imageWidth  :: CInt
                            deriving (Eq, Show)
 
 class Image a where
-    getImageData    :: a -> ImageData
-    wrapImageData   :: ImageData -> a
+    toImageData     :: a -> ImageData
+    fromImageData   :: ImageData -> a
 
 foreign import ccall unsafe "zef_core.h.h zef_mat_eq"
     c_mat_eq :: PCvMat -> PCvMat -> IO CInt
@@ -43,19 +43,19 @@ instance Eq ImageData where
 newtype RGBImage = RGBImage { unRGBImage :: ImageData } deriving (Eq, Show)
 
 instance Image ImageData where
-    getImageData    = id
-    wrapImageData   = id
+    toImageData     = id
+    fromImageData   = id
 
 instance Image RGBImage where
-    getImageData    = unRGBImage
-    wrapImageData   = RGBImage
+    toImageData     = unRGBImage
+    fromImageData   = RGBImage
 
 -- |A matrix containing a single channel gray scale image.
 newtype GrayImage = GrayImage { unGrayImage :: ImageData } deriving (Eq, Show)
 
 instance Image GrayImage where
-    getImageData    = unGrayImage
-    wrapImageData   = GrayImage
+    toImageData     = unGrayImage
+    fromImageData   = GrayImage
 
 type UnaryImageOp = PCvMat -> PCvMat -> IO ()
 
