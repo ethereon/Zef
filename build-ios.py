@@ -17,9 +17,9 @@ def setup_include_paths():
 
 def build():
     setup_include_paths()
-    cabal('clean')
+    cabal('install', args=['--dependencies-only'])
     cabal('configure')
-    cabal('build', args=['zef'])
+    cabal('build')
     print('Done.')
 
 if __name__=='__main__':
