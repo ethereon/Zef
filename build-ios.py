@@ -4,9 +4,10 @@ import os
 import subprocess as sp
 
 OPENCV_INCLUDE_PATH = '/usr/local/include'
+CABAL_BIN           = 'arm-apple-darwin10-cabal'
 
 def cabal(cmd, args=None):
-    cmd = ['cabal-ios', cmd]
+    cmd = [CABAL_BIN, cmd]
     if args is not None:
         cmd += args
     sp.check_call(cmd)
