@@ -22,7 +22,6 @@
 		8AB57DD71940517E006CA1A3 /* tracking-test.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 8AB57DD61940517E006CA1A3 /* tracking-test.mp4 */; };
 		8AB57DDA19405472006CA1A3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AB57DD919405472006CA1A3 /* AVFoundation.framework */; };
 		8AB57DDC1940547B006CA1A3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AB57DDB1940547B006CA1A3 /* CoreMedia.framework */; };
-		8AB57DE019405775006CA1A3 /* libzef.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AB57DDF19405775006CA1A3 /* libzef.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,7 +61,6 @@
 				8AB57DB719400130006CA1A3 /* libiconv.dylib in Frameworks */,
 				8A09FD2D193FFD420007F45F /* CoreGraphics.framework in Frameworks */,
 				8A09FD2F193FFD420007F45F /* UIKit.framework in Frameworks */,
-				8AB57DE019405775006CA1A3 /* libzef.a in Frameworks */,
 				8A09FD2B193FFD420007F45F /* Foundation.framework in Frameworks */,
 				8AB57DC919404F91006CA1A3 /* libtracker.a in Frameworks */,
 			);
@@ -333,8 +331,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/TrackerDemo/hs-src",
-					"$(PROJECT_DIR)/TrackerDemo/hs-src/dist/arm/build",
-					"$(PROJECT_DIR)/TrackerDemo/hs-src/build/arm",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -364,8 +360,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/TrackerDemo/hs-src",
-					"$(PROJECT_DIR)/TrackerDemo/hs-src/dist/arm/build",
-					"$(PROJECT_DIR)/TrackerDemo/hs-src/build/arm",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = armv7;
