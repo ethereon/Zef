@@ -15,6 +15,7 @@ import System.IO
 
 contrast :: GrayImage -> GrayImage
 contrast = Img.abs . Img.laplacian
+{-# INLINE contrast #-}
 
 saturation :: RGBImage -> GrayImage
 saturation img = Img.sqrt variance
