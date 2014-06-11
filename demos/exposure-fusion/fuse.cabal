@@ -1,10 +1,10 @@
-name:           hdr
+name:           fuse
 version:        1.0.0
-synopsis:       HDR Exposure Fusion Demo
+synopsis:       Exposure Fusion Demo
 build-type:     Simple
 cabal-version:  >= 1.10
 
-executable hdr
+executable fuse
   main-is: Main.hs
   ghc-options: -Wall -fwarn-tabs -O2
   build-depends:

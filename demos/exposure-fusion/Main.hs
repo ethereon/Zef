@@ -1,4 +1,4 @@
---  HDR Exposure Fusion using Zef
+--  Exposure Fusion using Zef
 
 --  Implements the algorithm as described in Merten's paper:
 --  http://research.edm.uhasselt.be/~tmertens/papers/exposure_fusion_reduced.pdf
@@ -46,7 +46,7 @@ main = do
     args <- getArgs
     if not $ (length args) `elem` [1, 2]
       then
-        hPutStrLn stderr "usage: hdr IMAGE_SET_DIR [OUTPUT_FILE_NAME]"
+        hPutStrLn stderr "usage: fuse IMAGE_SET_DIR [OUTPUT_FILE_NAME]"
       else do
         let srcDir:rest = args
         images <- imagesAtPath srcDir
